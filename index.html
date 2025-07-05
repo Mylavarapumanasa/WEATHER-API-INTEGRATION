@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Weather App - Full Stack Project</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #6dd5fa, #2980b9);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem;
+    }
+    h1 {
+      margin-bottom: 1rem;
+    }
+    .weather-container {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 2rem;
+      border-radius: 1rem;
+      text-align: center;
+      width: 100%;
+      max-width: 400px;
+    }
+    input {
+      padding: 0.5rem;
+      font-size: 1rem;
+      border: none;
+      border-radius: 5px;
+      margin-bottom: 1rem;
+      width: 100%;
+    }
+    button {
+      padding: 0.5rem 1rem;
+      background-color: #ffffff;
+      color: #2980b9;
+      font-weight: bold;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-bottom: 1rem;
+    }
+    .result {
+      margin-top: 1rem;
+    }
+    .icon {
+      width: 80px;
+    }
+    @media (max-width: 500px) {
+      .weather-container {
+        padding: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>🌤 Weather App</h1>
+  <div class="weather-container">
+    <input type="text" id="cityInput" placeholder="Enter city name" />
+    <button onclick="getWeather()">Get Weather</button>
+    <div class="result" id="weatherResult">Weather info will appear here</div>
+  </div>
+
+  <script>
+    async function getWeather() {
+      const city = document.getElementById("cityInput").value.trim();
+      if (!city) {
+        alert("Please enter a city");
+        return;
+      }
+
+      const apiKey = "05kTJJbLK1V7fyjODsSFx9drE441QfzF"; // Your active WeatherAPI key
+      const url = `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${encodeURIComponent(city)}`;
+
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (data.error) {
+          document.getElementById("weatherResult").innerHTML = `<p>❌ ${data.error.message}</p>`;
+        } else {
+          document.getElementById("weatherResult").innerHTML = `
+            <h2>${data.location.name}, ${data.location.country}</h2>
+            <img class="icon" src="${data.current.condition.icon}" alt="${data.current.condition.text}" />
+            <p><strong>${data.current.condition.text}</strong></p>
+            <p>🌡 Temperature: ${data.current.temp_c}°C</p>
+            <p>💧 Humidity: ${data.current.humidity}%</p>
+            <p>💨 Wind: ${data.current.wind_kph} kph</p>
+          `;
+        }
+      } catch (error) {
+        document.getElementById("weatherResult").innerHTML = `<p>⚠️ Error fetching weather data.</p>`;
+        console.error(error);
+      }
+    }
+  </script>
+</body>
+</html>
